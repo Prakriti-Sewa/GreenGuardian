@@ -1,0 +1,48 @@
+*.iml
+.kotlin
+.gradle
+**/build/
+.DS_Store
+
+# Android/Mobile
+local.properties
+captures
+.externalNativeBuild
+.cxx
+*.jks
+*.keystore
+google-services.json
+GoogleService-Info.plist
+
+# Xcode
+!.gitignore
+xcuserdata
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcodeproj/project.xcworkspace/
+!*.xcworkspace/contents.xcworkspacedata
+**/xcshareddata/WorkspaceSettings.xcsettings
+
+# Environment Variables
+.env
+.env.*
+!.env.example
+
+# IntelliJ
+.idea
+*.iws
+*.iph
+*.pep
+*.iml
+
+# VS Code
+.vscode/
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# System
+Thumbs.db
