@@ -1,6 +1,7 @@
 package `in`.co.abdev.greenguardian.ui.screens
 
 import `in`.co.abdev.greenguardian.data.model.Issue
+import `in`.co.abdev.greenguardian.ui.viewmodel.IssuesUiState
 import `in`.co.abdev.greenguardian.ui.viewmodel.IssuesViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -45,8 +46,7 @@ fun MapScreen(
         }
     ) { paddingValues ->
         MapContent(
-            issues = uiState.issues,
-            isLoading = uiState.isLoading,
+            uiState = uiState,
             onIssueClick = onNavigateToIssue,
             onRefresh = { viewModel.loadIssues() },
             modifier = Modifier.padding(paddingValues)
@@ -56,15 +56,13 @@ fun MapScreen(
 
 @Composable
 fun MapContent(
-    issues: List<Issue>,
-    isLoading: Boolean,
+    uiState: IssuesUiState,
     onIssueClick: (String) -> Unit,
     onRefresh: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        // Placeholder for actual map integration
-        // TODO: Integrate MapLibre or similar map library
+        // Map Placeholder
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -94,7 +92,7 @@ fun MapContent(
             }
         }
         
-        // Issues List (Temporary until map is integrated)
+        // Issues List
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -118,7 +116,7 @@ fun MapContent(
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        "${issues.size} found",
+                        "${uiState.issues.size} found",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -127,7 +125,7 @@ fun MapContent(
                 HorizontalDivider()
                 
                 when {
-                    isLoading -> {
+                    uiState.isLoading -> {
                         Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
@@ -135,7 +133,7 @@ fun MapContent(
                             CircularProgressIndicator()
                         }
                     }
-                    issues.isEmpty() -> {
+                    uiState.issues.isEmpty() -> {
                         Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
@@ -161,7 +159,7 @@ fun MapContent(
                             contentPadding = PaddingValues(16.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            items(issues) { issue ->
+                            items(uiState.issues) { issue ->
                                 MapIssueCard(
                                     issue = issue,
                                     onClick = { onIssueClick(issue.id) }
@@ -190,7 +188,6 @@ fun MapIssueCard(
                 .padding(12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Location indicator
             Box(
                 modifier = Modifier
                     .size(40.dp)
@@ -228,7 +225,7 @@ fun MapIssueCard(
             }
             
             Icon(
-                Icons.Default.ChevronRight,
+                Icons.Default.KeyboardArrowRight,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )

@@ -1,6 +1,8 @@
 package `in`.co.abdev.greenguardian
 
 import `in`.co.abdev.greenguardian.ui.screens.HomeScreen
+import `in`.co.abdev.greenguardian.ui.screens.IssueDetailScreen
+import `in`.co.abdev.greenguardian.ui.screens.MapScreen
 import `in`.co.abdev.greenguardian.ui.screens.ReportIssueScreen
 import `in`.co.abdev.greenguardian.ui.theme.GreenGuardianTheme
 import androidx.compose.runtime.*
@@ -38,19 +40,18 @@ fun App() {
                 )
             }
             Screen.Map -> {
-                // TODO: Implement MapScreen
-                HomeScreen(
-                    onNavigateToReport = { currentScreen = Screen.ReportIssue },
-                    onNavigateToMap = { },
-                    onNavigateToIssue = { }
+                MapScreen(
+                    onNavigateBack = { currentScreen = Screen.Home },
+                    onNavigateToIssue = { issueId ->
+                        selectedIssueId = issueId
+                        currentScreen = Screen.IssueDetail
+                    }
                 )
             }
             Screen.IssueDetail -> {
-                // TODO: Implement IssueDetailScreen
-                HomeScreen(
-                    onNavigateToReport = { currentScreen = Screen.ReportIssue },
-                    onNavigateToMap = { currentScreen = Screen.Map },
-                    onNavigateToIssue = { }
+                IssueDetailScreen(
+                    issueId = selectedIssueId ?: "",
+                    onNavigateBack = { currentScreen = Screen.Home }
                 )
             }
         }
