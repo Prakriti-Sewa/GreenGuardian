@@ -20,6 +20,7 @@ data class ReportIssueUiState(
     val longitude: String = "",
     val isSubmitting: Boolean = false,
     val isSuccess: Boolean = false,
+    val createdIssueId: String? = null,
     val error: String? = null
 )
 
@@ -96,10 +97,11 @@ class ReportIssueViewModel : ViewModel() {
             )
             
             repository.createIssue(request)
-                .onSuccess {
+                .onSuccess { issue ->
                     _uiState.value = _uiState.value.copy(
                         isSubmitting = false,
-                        isSuccess = true
+                        isSuccess = true,
+                        createdIssueId = issue.id
                     )
                 }
                 .onFailure { error ->

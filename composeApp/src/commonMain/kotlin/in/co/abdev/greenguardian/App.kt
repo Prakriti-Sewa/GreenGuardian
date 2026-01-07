@@ -34,7 +34,7 @@ fun App() {
             Screen.ReportIssue -> {
                 ReportIssueScreen(
                     onNavigateBack = { currentScreen = Screen.Home },
-                    onIssueCreated = { currentScreen = Screen.Home }
+                    onIssueCreated = { _ -> currentScreen = Screen.Home }
                 )
             }
             Screen.Map -> {

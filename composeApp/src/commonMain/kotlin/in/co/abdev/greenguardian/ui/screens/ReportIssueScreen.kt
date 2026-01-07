@@ -23,18 +23,19 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 @Composable
 fun ReportIssueScreen(
     onNavigateBack: () -> Unit,
-    onIssueCreated: () -> Unit,
+    onIssueCreated: (String) -> Unit = {},
     viewModel: ReportIssueViewModel = viewModel { ReportIssueViewModel() }
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     
     // Handle success
-    LaunchedEffect(uiState.isSuccess) {
-        if (uiState.isSuccess) {
+    LaunchedEffect(uiState.isSuccess, uiState.createdIssueId) {
+        if (uiState.isSuccess && uiState.createdIssueId != null) {
             snackbarHostState.showSnackbar("Issue reported successfully!")
+            val issueId = uiState.createdIssueId!!
             viewModel.resetState()
-            onIssueCreated()
+            onIssueCreated(issueId)
         }
     }
     
