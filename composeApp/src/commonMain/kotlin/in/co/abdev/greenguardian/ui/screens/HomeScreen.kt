@@ -25,6 +25,7 @@ fun HomeScreen(
     onNavigateToReport: () -> Unit,
     onNavigateToMap: () -> Unit,
     onNavigateToIssue: (String) -> Unit,
+    onNavigateToProfile: () -> Unit = {},
     viewModel: IssuesViewModel = viewModel { IssuesViewModel() }
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -75,7 +76,7 @@ fun HomeScreen(
                     icon = { Icon(Icons.Default.Person, contentDescription = null) },
                     label = { Text("Profile") },
                     selected = false,
-                    onClick = { }
+                    onClick = onNavigateToProfile
                 )
             }
         }
