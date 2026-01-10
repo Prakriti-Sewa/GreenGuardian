@@ -128,6 +128,11 @@ dependencies {
 compose.desktop {
     application {
         mainClass = "in.co.abdev.greenguardian.MainKt"
+        
+        // Pass environment variables to the JVM
+        jvmArgs += listOf(
+            "-DMAPBOX_TOKEN=${System.getenv("MAPBOX_TOKEN") ?: ""}"
+        )
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
