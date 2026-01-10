@@ -1,8 +1,5 @@
 package `in`.co.abdev.greenguardian.ui.screens
 
-import `in`.co.abdev.greenguardian.data.model.Issue
-import `in`.co.abdev.greenguardian.ui.viewmodel.IssuesUiState
-import `in`.co.abdev.greenguardian.ui.viewmodel.IssuesViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,151 +16,129 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import `in`.co.abdev.greenguardian.data.model.Issue
+import `in`.co.abdev.greenguardian.ui.components.MapView
+import `in`.co.abdev.greenguardian.ui.viewmodel.IssuesUiState
+import `in`.co.abdev.greenguardian.ui.viewmodel.IssuesViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapScreen(
-    onNavigateBack: () -> Unit,
-    onNavigateToIssue: (String) -> Unit,
-    viewModel: IssuesViewModel = viewModel { IssuesViewModel() }
+        onNavigateBack: () -> Unit,
+        onNavigateToIssue: (String) -> Unit,
+        viewModel: IssuesViewModel = viewModel { IssuesViewModel() }
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    
+
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Issues Map") },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            topBar = {
+                TopAppBar(
+                        title = { Text("Issues Map") },
+                        navigationIcon = {
+                            IconButton(onClick = onNavigateBack) {
+                                Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                            }
+                        },
+                        colors =
+                                TopAppBarDefaults.topAppBarColors(
+                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                        titleContentColor =
+                                                MaterialTheme.colorScheme.onPrimaryContainer
+                                )
                 )
-            )
-        }
+            }
     ) { paddingValues ->
         MapContent(
-            uiState = uiState,
-            onIssueClick = onNavigateToIssue,
-            onRefresh = { viewModel.loadIssues() },
-            modifier = Modifier.padding(paddingValues)
+                uiState = uiState,
+                onIssueClick = onNavigateToIssue,
+                onRefresh = { viewModel.loadIssues() },
+                modifier = Modifier.padding(paddingValues)
         )
     }
 }
 
 @Composable
 fun MapContent(
-    uiState: IssuesUiState,
-    onIssueClick: (String) -> Unit,
-    onRefresh: () -> Unit,
-    modifier: Modifier = Modifier
+        uiState: IssuesUiState,
+        onIssueClick: (String) -> Unit,
+        onRefresh: () -> Unit,
+        modifier: Modifier = Modifier
 ) {
+    // Refresh on display
+    LaunchedEffect(Unit) { onRefresh() }
+
     Column(modifier = modifier.fillMaxSize()) {
-        // Map Placeholder
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .background(MaterialTheme.colorScheme.surfaceVariant),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Icon(
-                    Icons.Default.Map,
-                    contentDescription = null,
-                    modifier = Modifier.size(64.dp),
-                    tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
-                )
-                Text(
-                    "Map View Coming Soon",
-                    style = MaterialTheme.typography.titleLarge
-                )
-                Text(
-                    "Will integrate MapLibre for interactive maps",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-        
+        // Mapbox Map
+        MapView(
+                modifier = Modifier.fillMaxWidth().weight(1f),
+                issues = uiState.issues,
+                onIssueClick = onIssueClick
+        )
+
         // Issues List
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            shape = MaterialTheme.shapes.large.copy(
-                bottomStart = androidx.compose.foundation.shape.CornerSize(0.dp),
-                bottomEnd = androidx.compose.foundation.shape.CornerSize(0.dp)
-            )
+                modifier = Modifier.fillMaxWidth().weight(1f),
+                shape =
+                        MaterialTheme.shapes.large.copy(
+                                bottomStart = androidx.compose.foundation.shape.CornerSize(0.dp),
+                                bottomEnd = androidx.compose.foundation.shape.CornerSize(0.dp)
+                        )
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        "Nearby Issues",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                            "Nearby Issues",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
                     )
                     Text(
-                        "${uiState.issues.size} found",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                            "${uiState.issues.size} found",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                
+
                 HorizontalDivider()
-                
+
                 when {
                     uiState.isLoading -> {
                         Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator()
-                        }
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                        ) { CircularProgressIndicator() }
                     }
                     uiState.issues.isEmpty() -> {
                         Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
                         ) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Icon(
-                                    Icons.Default.LocationOff,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(48.dp),
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                        Icons.Default.LocationOff,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(48.dp),
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
-                                    "No issues in this area",
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        "No issues in this area",
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
                     }
                     else -> {
                         LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             items(uiState.issues) { issue ->
-                                MapIssueCard(
-                                    issue = issue,
-                                    onClick = { onIssueClick(issue.id) }
-                                )
+                                MapIssueCard(issue = issue, onClick = { onIssueClick(issue.id) })
                             }
                         }
                     }
@@ -174,60 +149,52 @@ fun MapContent(
 }
 
 @Composable
-fun MapIssueCard(
-    issue: Issue,
-    onClick: () -> Unit
-) {
-    Card(
-        onClick = onClick,
-        modifier = Modifier.fillMaxWidth()
-    ) {
+fun MapIssueCard(issue: Issue, onClick: () -> Unit) {
+    Card(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                modifier = Modifier.fillMaxWidth().padding(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primaryContainer),
-                contentAlignment = Alignment.Center
+                    modifier =
+                            Modifier.size(40.dp)
+                                    .clip(CircleShape)
+                                    .background(MaterialTheme.colorScheme.primaryContainer),
+                    contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    Icons.Default.LocationOn,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
+                        Icons.Default.LocationOn,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
                 )
             }
-            
+
             Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
-                    text = issue.title,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold
+                        text = issue.title,
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = issue.description,
-                    style = MaterialTheme.typography.bodySmall,
-                    maxLines = 1,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                        text = issue.description,
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 1,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = "${issue.latitude.format(4)}, ${issue.longitude.format(4)}",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.primary
+                        text = "${issue.latitude.format(4)}, ${issue.longitude.format(4)}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.primary
                 )
             }
-            
+
             Icon(
-                Icons.Default.KeyboardArrowRight,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    Icons.Default.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
