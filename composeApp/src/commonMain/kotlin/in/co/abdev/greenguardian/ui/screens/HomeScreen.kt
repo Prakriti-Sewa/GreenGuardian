@@ -297,7 +297,13 @@ fun IssueCategoryChip(category: `in`.co.abdev.greenguardian.data.model.IssueCate
 }
 
 fun Double.format(decimals: Int): String {
-    return "%.${decimals}f".format(this)
+    val str = this.toString()
+    val index = str.indexOf('.')
+    return if (index != -1 && index + decimals + 1 < str.length) {
+        str.substring(0, index + decimals + 1)
+    } else {
+        str
+    }
 }
 
 fun String.capitalize(): String {
